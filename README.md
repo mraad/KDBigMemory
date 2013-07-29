@@ -1,27 +1,70 @@
 KDBigMemory
 ===========
 
-Simple MapReduce Kernel Density aggregation using Hadoop and with [BigMemory](http://terracotta.org/products/bigmemory).
+Simple MapReduce Kernel Density aggregation using Hadoop and [BigMemory](http://terracotta.org/products/bigmemory).
 
 The Hadoop job output is a collection set in BigMemory rather than a file in HDFS.
-The job map function expects each input text line to be tab separated and the last two fields content is a latitude value and a longitude value.
 
-Build and package
------------------
+## Build and package
 
     $ mvn install
 
-Run hadoop job
------------------
-The job expects two arguments, the first argument is an HDFS input path and the second argument is the BigMemory set and map prefix name.
 
-Here is a sample execution:
+## Setup
 
-    $ hadoop jar target/KDBigMemory-1.0-SNAPSHOT-job.jar /user/mraad_admin/InfoUSA/InfoUSA.txt infousa
+Check out [this](http://terracotta.org/documentation/4.0/bigmemorymax/get-started/quick-start) quick tutorial to start BigMemory.
 
-The job will create a collection map that contains the bounding box of the kernel density and the number of units per kernel density cell.
+The following is my xml configuration file:
 
-Dump BigMemory content
-----------------------
+    <?xml version="1.0" encoding="UTF-8"?>
+    <con:tc-config xmlns:con="http://www.terracotta.org/config">
+        <servers>
+            <mirror-group group-name="group1">
+                <server host="localhost" bind="localhost" name="server1">
+                    <offheap>
+                        <enabled>false</enabled>
+                        <maxDataSize>256M</maxDataSize>
+                    </offheap>
+                    <tsa-port bind="localhost">9510</tsa-port>
+                    <jmx-port bind="localhost">9520</jmx-port>
+                    <tsa-group-port bind="localhost">9530</tsa-group-port>
+                    <data>terracotta/server1-data</data>
+                    <logs>terracotta/server1-logs</logs>
+                    <data-backup>terracotta/server1-backups</data-backup>
+                </server>
+            </mirror-group>
+            <update-check>
+                <enabled>false</enabled>
+            </update-check>
+            <garbage-collection>
+                <enabled>false</enabled>
+            </garbage-collection>
+            <restartable enabled="false"/>
+        </servers>
+        <clients>
+            <logs>terracotta/client-logs</logs>
+        </clients>
+    </con:tc-config>
+
+## Run hadoop job
+
+The job reads from HDFS a tab delimted text file where the last two fields in each input line are a latitude and longitude values respectively.
+Rather than putting the result back into HDFS, the output is sent to BigMemory in the form of a collection set.
+The collection set is composed of items containing the kernel density cell location in a hash format and the number of inputs in that cell.
+
+The job arguments are:
+
+- HDFS input path
+- collection name prefix
+- bounding box horizontal lower limit
+- bounding box vertical lower limit
+- bounding box horizontal upper limit
+- bounding box vertical upper limit
+- cell size
+
+
+    $ hadoop jar target/KDBigMemory-1.0-SNAPSHOT-job.jar /user/mraad_admin/InfoUSA/InfoUSA.txt infousa -180 -90 180 90 1
+
+## Dump BigMemory content
 
     $ mvn -q exec:java -Dexec.mainClass=com.esri.KDDump -Dexec.args="infousa"

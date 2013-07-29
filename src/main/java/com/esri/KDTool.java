@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * hadoop jar target/KDBigMemory-1.0-SNAPSHOT-job.jar /user/mraad_admin/InfoUSA/InfoUSA.txt infousa
+ * hadoop jar target/KDBigMemory-1.0-SNAPSHOT-job.jar /user/mraad_admin/InfoUSA/InfoUSA.txt infousa -180 -90 180 90 1
  */
 public class KDTool extends Configured implements Tool
 {
@@ -30,8 +30,9 @@ public class KDTool extends Configured implements Tool
     public int run(final String[] args) throws Exception
     {
         final int rc;
-        if (args.length != 2)
+        if (args.length != 7)
         {
+            System.err.println("Arguments format: input-path world-name xmin ymin xmax ymax cell-size");
             ToolRunner.printGenericCommandUsage(System.err);
             rc = -1;
         }
@@ -46,13 +47,13 @@ public class KDTool extends Configured implements Tool
 
                 // Set BigMemory KD map key/values
                 final Map<String, Double> map = toolkit.getMap(worldName + "Map", String.class, Double.class);
-                map.put(KDConst.XMIN_KEY, -180.0);
-                map.put(KDConst.YMIN_KEY, -90.0);
-                map.put(KDConst.XMAX_KEY, 180.0);
-                map.put(KDConst.YMAX_KEY, 90.0);
-                map.put(KDConst.CELL_KEY, 1.0);
+                map.put(KDConst.XMIN_KEY, Double.parseDouble(args[2]));
+                map.put(KDConst.YMIN_KEY, Double.parseDouble(args[3]));
+                map.put(KDConst.XMAX_KEY, Double.parseDouble(args[4]));
+                map.put(KDConst.YMAX_KEY, Double.parseDouble(args[5]));
+                map.put(KDConst.CELL_KEY, Double.parseDouble(args[6]));
 
-                rc = runJob(args[0], worldName);
+                rc = runJob(args);
             }
             finally
             {
@@ -63,22 +64,22 @@ public class KDTool extends Configured implements Tool
     }
 
     private int runJob(
-            final String path,
-            final String worldName) throws IOException, InterruptedException, ClassNotFoundException
+            final String[] args
+    ) throws IOException, InterruptedException, ClassNotFoundException
     {
         final Configuration configuration = getConf();
 
-        configuration.set(KDConst.KDSET_KEY, worldName + "Set");
-        configuration.setFloat(KDConst.XMIN_KEY, -180.0F);
-        configuration.setFloat(KDConst.YMIN_KEY, -90.0F);
-        configuration.setFloat(KDConst.XMAX_KEY, 180.0F);
-        configuration.setFloat(KDConst.YMAX_KEY, 90.0F);
-        configuration.setFloat(KDConst.CELL_KEY, 1.0F);
+        configuration.set(KDConst.KDSET_KEY, args[1] + "Set");
+        configuration.setFloat(KDConst.XMIN_KEY, Float.parseFloat(args[2]));
+        configuration.setFloat(KDConst.YMIN_KEY, Float.parseFloat(args[3]));
+        configuration.setFloat(KDConst.XMAX_KEY, Float.parseFloat(args[4]));
+        configuration.setFloat(KDConst.YMAX_KEY, Float.parseFloat(args[5]));
+        configuration.setFloat(KDConst.CELL_KEY, Float.parseFloat(args[6]));
 
         final Job job = new Job(configuration, KDTool.class.getSimpleName());
         job.setJarByClass(getClass());
 
-        FileInputFormat.addInputPath(job, new Path(path));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
 
         job.setInputFormatClass(TextInputFormat.class);
 
