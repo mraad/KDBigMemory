@@ -1,14 +1,38 @@
 KDBigMemory
 ===========
 
-Simple MapReduce Kernel Density aggregation using Hadoop and [BigMemory](http://terracotta.org/products/bigmemory).
+Simple MapReduce Kernel Density aggregation using Hadoop and [BigMemoryMAX](http://terracotta.org/products/bigmemory).
 
-The Hadoop job output is a collection set in BigMemory rather than a file in HDFS.
+The Hadoop job output is an _in-memory_ collection set in BigMemory rather than a file in HDFS.
+This project is inpsired from [Hadoop BigMemory](http://blog.terracotta.org/2013/04/02/hadoop-bigmemory-run-elephant-run/).
 
 ## Build and package
 
+After [downloading](http://terracotta.org/downloads) BigMemoryMAX, execute the following maven commands to populate you local maven repo with the dependency jars:
+
+    mvn install:install-file \
+     -Dfile=./common/lib/bigmemory-4.0.0.jar\
+     -DgroupId=org.terracotta\
+     -DartifactId=bigmemory\
+     -Dversion=4.0.0\
+     -Dpackaging=jar\
+     -DgeneratePom=true
+
+    mvn install:install-file \
+     -Dfile=./apis/toolkit/lib/terracotta-toolkit-runtime-ee-4.0.0.jar\
+     -DgroupId=org.terracotta\
+     -DartifactId=terracotta-toolkit-runtime-ee\
+     -Dversion=4.0.0\
+     -Dpackaging=jar\
+     -DgeneratePom=true
+
+Build and package:
+
     $ mvn install
 
+The default maven profile is based on CDH3. You can package the jar for CDH4 as follows:
+
+    $ mvn -P chd4 clean install
 
 ## Setup
 
@@ -66,6 +90,7 @@ The job arguments are:
 - bounding box vertical upper limit
 - cell size
 
+Here is a sample job run:
 
     $ hadoop jar target/KDBigMemory-1.0-SNAPSHOT-job.jar /user/mraad_admin/InfoUSA/InfoUSA.txt infousa -180 -90 180 90 1
 
