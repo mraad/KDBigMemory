@@ -74,7 +74,7 @@ Start the server as follows:
 
     $ start-tc-server.sh -f ~/tc-config.xml -n server1
 
-## Run hadoop job
+## Run Hadoop job
 
 The job reads from HDFS a tab delimted text file where the last two fields in each input line are a latitude and longitude values respectively.
 Rather than putting the result back into HDFS, the output is sent to BigMemory in the form of a collection set.
