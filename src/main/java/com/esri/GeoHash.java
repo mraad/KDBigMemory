@@ -17,6 +17,7 @@ public final class GeoHash
     {
         final long gx = (long) Math.floor((x - xmin) * nume);
         final long gy = (long) Math.floor((y - ymin) * nume);
+        // gx and gy are positive integer values.
         return (gx << 32) | gy;
     }
 

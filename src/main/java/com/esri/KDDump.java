@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * mvn -q exec:java -Dexec.mainClass=com.esri.KDDump world-name
+ * mvn -q exec:java -Dexec.mainClass=com.esri.KDDump -Dexec.args="infousa"
  */
 public final class KDDump
 {
@@ -22,12 +22,14 @@ public final class KDDump
         try
         {
             final String worldName = args.length == 0 ? "infousa" : args[0];
+            // Get the job arguments.
             final Map<String, Double> map = toolkit.getMap(worldName + "Map", String.class, Double.class);
             if (map != null && map.size() > 0)
             {
                 final double xmin = map.get(KDConst.XMIN_KEY);
                 final double ymin = map.get(KDConst.YMIN_KEY);
                 final double cell = map.get(KDConst.CELL_KEY);
+                // Iterate over the job output result.
                 for (final KDItem item : toolkit.getSet(worldName + "Set", KDItem.class))
                 {
                     System.out.format("%.1f\t%.1f\t%d\n",

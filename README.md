@@ -46,6 +46,10 @@ The following is my xml configuration file:
         </clients>
     </con:tc-config>
 
+Start the server as follows:
+
+    $ start-tc-server.sh -f ~/tc-config.xml -n server1
+
 ## Run hadoop job
 
 The job reads from HDFS a tab delimted text file where the last two fields in each input line are a latitude and longitude values respectively.
@@ -64,6 +68,8 @@ The job arguments are:
 
 
     $ hadoop jar target/KDBigMemory-1.0-SNAPSHOT-job.jar /user/mraad_admin/InfoUSA/InfoUSA.txt infousa -180 -90 180 90 1
+
+The arguments are saved in a collection map for future retreival and association with the output collection set.
 
 ## Dump BigMemory content
 
