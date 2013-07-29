@@ -8,7 +8,7 @@ This project is inpsired from [Hadoop BigMemory](http://blog.terracotta.org/2013
 
 ## Build and package
 
-After [downloading](http://terracotta.org/downloads) BigMemoryMAX, execute the following maven commands to populate you local maven repo with the dependency jars:
+After [downloading](http://terracotta.org/downloads) BigMemoryMAX, execute the following maven commands in the bigmemory-max folder to populate your local maven repo with the dependency jars:
 
     mvn install:install-file \
      -Dfile=./common/lib/bigmemory-4.0.0.jar\
@@ -26,7 +26,7 @@ After [downloading](http://terracotta.org/downloads) BigMemoryMAX, execute the f
      -Dpackaging=jar\
      -DgeneratePom=true
 
-Build and package:
+Go back to this project folder, build and package:
 
     $ mvn install
 
@@ -34,7 +34,7 @@ The default maven profile is based on CDH3. You can package the jar for CDH4 as 
 
     $ mvn -P chd4 clean install
 
-## Setup
+## Run BigMemory server
 
 Check out [this](http://terracotta.org/documentation/4.0/bigmemorymax/get-started/quick-start) quick tutorial to start BigMemory.
 
